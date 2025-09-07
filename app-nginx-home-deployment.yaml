@@ -1,0 +1,214 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-app-home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-app-home
+  template:
+    metadata:
+      labels:
+        app: nginx-app-home
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:stable
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-content
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: nginx-content
+        configMap:
+          name: nginx-content
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-content
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="robots" content="noindex, nofollow">
+      <meta name="googlebot" content="noindex, nofollow">
+      <title>HomeLab - Dev and Staging</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 30px;
+          background-color: #f0f8ff;
+        }
+        .container {
+          max-width: 800px;
+          margin: 0 auto;
+          background: white;
+          padding: 30px;
+          border-radius: 10px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+          color: #333;
+          border-bottom: 2px solid #0078d7;
+          padding-bottom: 10px;
+        }
+        h2 {
+          color: #0078d7;
+          margin-top: 25px;
+        }
+        .domain {
+          font-weight: bold;
+          color: #0078d7;
+        }
+        .info {
+          background-color: #f5f5f5;
+          padding: 15px;
+          border-radius: 5px;
+          margin-top: 20px;
+        }
+        .tech-list {
+          background-color: #f8f8f8;
+          padding: 15px;
+          border-radius: 5px;
+          border-left: 4px solid #0078d7;
+          margin: 20px 0;
+        }
+        .tech-list h3 {
+          margin-top: 0;
+          color: #0078d7;
+        }
+        .tech-list ul {
+          margin-bottom: 5px;
+        }
+        .tech-category {
+          margin-bottom: 15px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Welcome my HomeLab Dev and Staging</h1>
+        <p>"O verdadeiro sentido da vida não está na partida nem na chegada e sim na trajetória."</p>
+
+        <div class="tech-list">
+          <h3>Tecnologias Envolvidas</h3>
+
+          <div class="tech-category">
+            <h4>Infraestrutura Base</h4>
+            <ul>
+              <li><strong>Kind (Kubernetes in Docker)</strong> - Cluster Kubernetes local</li>
+              <li><strong>OCI (Oracle Cloud Infrastructure)</strong> - Serviço de nuvem hospedando a VM</li>
+              <li><strong>containerd</strong> - Runtime de contêiner usado pelo Kind</li>
+              <li><strong>Docker</strong> - Plataforma de contêineres para execução do Kind</li>
+            </ul>
+          </div>
+
+          <div class="tech-category">
+            <h4>Rede e Acesso</h4>
+            <ul>
+              <li><strong>MetalLB</strong> - Balanceador de carga que provê IPs externos para serviços LoadBalancer</li>
+              <li><strong>NGINX Ingress Controller</strong> - Gerenciador de entrada para roteamento HTTP/HTTPS</li>
+              <li><strong>Calico</strong> - Solução de rede para comunicação entre pods</li>
+            </ul>
+          </div>
+
+          <div class="tech-category">
+            <h4>Armazenamento e Persistência</h4>
+            <ul>
+              <li><strong>NFS Server</strong> - Servidor de arquivos de rede para persistência de dados</li>
+            </ul>
+          </div>
+
+          <div class="tech-category">
+            <h4>Segurança</h4>
+            <ul>
+              <li><strong>Sealed Secrets</strong> - Controlador para gerenciar segredos criptografados</li>
+              <li><strong>cert-manager</strong> - Gerenciamento automático de certificados TLS</li>
+              <li><strong>Let's Encrypt</strong> - Autoridade certificadora gratuita para SSL/TLS</li>
+            </ul>
+          </div>
+
+          <div class="tech-category">
+            <h4>Componentes Adicionais</h4>
+            <ul>
+              <li><strong>Registro Docker Local</strong> - Armazenamento local de imagens de contêineres</li>
+              <li><strong>ConfigMaps</strong> - Armazenamento de configurações</li>
+              <li><strong>Etc</strong>...</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="info">
+          <p>Você está acessando pelo hostname: <span class="domain" id="hostname">carregando...</span></p>
+          <p>Servidor: <span id="pod">carregando...</span></p>
+          <p>Data e hora: <span id="datetime">carregando...</span></p>
+        </div>
+      </div>
+
+      <script>
+        // Exibir o hostname utilizado
+        document.getElementById('hostname').textContent = window.location.hostname;
+
+        // Exibir o nome do pod (simulado aqui)
+        const podName = "nginx-demo-" + Math.random().toString(36).substring(2, 7);
+        document.getElementById('pod').textContent = podName;
+
+        // Exibir data e hora atual
+        const now = new Date();
+        document.getElementById('datetime').textContent = now.toLocaleString();
+      </script>
+    </body>
+    </html>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-app-home
+spec:
+  selector:
+    app: nginx-app-home
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-nginx-default
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"   # letsencrypt-staging para testes, apos usar letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - yourdomain.com.br
+    - www.yourdomain.com.br
+    secretName: yourdomain-com-br-tls
+  rules:
+  - host: yourdomain.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-app-home
+            port:
+              number: 80
+  - host: www.yourdomain.com.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-app-home
+            port:
+              number: 80
