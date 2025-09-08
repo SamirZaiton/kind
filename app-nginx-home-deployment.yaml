@@ -1,196 +1,466 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Namespace
 metadata:
-  name: nginx-app-home
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: nginx-app-home
-  template:
-    metadata:
-      labels:
-        app: nginx-app-home
-    spec:
-      containers:
-      - name: nginx
-        image: nginx:stable
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: nginx-content
-          mountPath: /usr/share/nginx/html
-      volumes:
-      - name: nginx-content
-        configMap:
-          name: nginx-content
+  name: homelab
+
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nginx-content
+  name: homelab-index
+  namespace: homelab
 data:
-  index.html: |
-    <!DOCTYPE html>
-    <html>
+  index.html: |-
+    <!doctype html>
+    <html lang="pt-br" class="scroll-smooth">
     <head>
-      <meta charset="UTF-8">
-      <meta name="robots" content="noindex, nofollow">
-      <meta name="googlebot" content="noindex, nofollow">
-      <title>HomeLab - Dev and Staging</title>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1" />
+      <title>HomeLab – Dev & Staging</title>
+      <meta name="description" content="Página inicial do HomeLab (Dev & Staging) com visão do stack, links úteis e diagrama da arquitetura." />
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+      <!-- Tailwind -->
+      <script src="https://cdn.tailwindcss.com"></script>
+      <!-- Lucide Icons -->
+      <script defer src="https://unpkg.com/lucide@latest"></script>
+      <!-- Mermaid for diagrams -->
+      <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+      </script>
       <style>
-        body {
-          font-family: Arial, sans-serif;
-          margin: 0;
-          padding: 30px;
-          background-color: #f0f8ff;
-        }
-        .container {
-          max-width: 800px;
-          margin: 0 auto;
-          background: white;
-          padding: 30px;
-          border-radius: 10px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-          color: #333;
-          border-bottom: 2px solid #0078d7;
-          padding-bottom: 10px;
-        }
-        h2 {
-          color: #0078d7;
-          margin-top: 25px;
-        }
-        .domain {
-          font-weight: bold;
-          color: #0078d7;
-        }
-        .info {
-          background-color: #f5f5f5;
-          padding: 15px;
-          border-radius: 5px;
-          margin-top: 20px;
-        }
-        .tech-list {
-          background-color: #f8f8f8;
-          padding: 15px;
-          border-radius: 5px;
-          border-left: 4px solid #0078d7;
-          margin: 20px 0;
-        }
-        .tech-list h3 {
-          margin-top: 0;
-          color: #0078d7;
-        }
-        .tech-list ul {
-          margin-bottom: 5px;
-        }
-        .tech-category {
-          margin-bottom: 15px;
-        }
+        html, body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
+        /* Fundo sutil */
+        .bg-grid { background-image: radial-gradient(rgba(255,255,255,.08) 1px, transparent 1px); background-size: 18px 18px; }
+        /* Hover cards */
+        .card { transition: transform .2s ease, box-shadow .2s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -8px rgba(0,0,0,.35); }
+        /* Pulso ícone */
+        .pulse::before{ content:""; position:absolute; inset:-2px; border-radius:9999px; box-shadow:0 0 0 0 rgba(34,197,94,.55); animation:pulse 2.4s ease-out infinite; }
+        @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(34,197,94,.5);} 70%{box-shadow:0 0 0 14px rgba(34,197,94,0);} 100%{box-shadow:0 0 0 0 rgba(34,197,94,0);} }
       </style>
     </head>
-    <body>
-      <div class="container">
-        <h1>Welcome my HomeLab Dev and Staging</h1>
-        <p>"O verdadeiro sentido da vida não está na partida nem na chegada e sim na trajetória."</p>
-
-        <div class="tech-list">
-          <h3>Tecnologias Envolvidas</h3>
-
-          <div class="tech-category">
-            <h4>Infraestrutura Base</h4>
-            <ul>
-              <li><strong>Kind (Kubernetes in Docker)</strong> - Cluster Kubernetes local</li>
-              <li><strong>OCI (Oracle Cloud Infrastructure)</strong> - Serviço de nuvem hospedando a VM</li>
-              <li><strong>containerd</strong> - Runtime de contêiner usado pelo Kind</li>
-              <li><strong>Docker</strong> - Plataforma de contêineres para execução do Kind</li>
-            </ul>
-          </div>
-
-          <div class="tech-category">
-            <h4>Rede e Acesso</h4>
-            <ul>
-              <li><strong>MetalLB</strong> - Balanceador de carga que provê IPs externos para serviços LoadBalancer</li>
-              <li><strong>NGINX Ingress Controller</strong> - Gerenciador de entrada para roteamento HTTP/HTTPS</li>
-              <li><strong>Calico</strong> - Solução de rede para comunicação entre pods</li>
-            </ul>
-          </div>
-
-          <div class="tech-category">
-            <h4>Armazenamento e Persistência</h4>
-            <ul>
-              <li><strong>NFS Server</strong> - Servidor de arquivos de rede para persistência de dados</li>
-            </ul>
-          </div>
-
-          <div class="tech-category">
-            <h4>Segurança</h4>
-            <ul>
-              <li><strong>Sealed Secrets</strong> - Controlador para gerenciar segredos criptografados</li>
-              <li><strong>cert-manager</strong> - Gerenciamento automático de certificados TLS</li>
-              <li><strong>Let's Encrypt</strong> - Autoridade certificadora gratuita para SSL/TLS</li>
-            </ul>
-          </div>
-
-          <div class="tech-category">
-            <h4>Componentes Adicionais</h4>
-            <ul>
-              <li><strong>Registro Docker Local</strong> - Armazenamento local de imagens de contêineres</li>
-              <li><strong>ConfigMaps</strong> - Armazenamento de configurações</li>
-              <li><strong>Etc</strong>...</li>
-            </ul>
+    <body class="bg-slate-950 text-slate-100 selection:bg-blue-600/40">
+      <!-- Header -->
+      <header class="relative border-b border-white/10">
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-600/15 via-fuchsia-600/10 to-emerald-500/10 pointer-events-none"></div>
+        <div class="container mx-auto px-4 py-8 lg:py-12">
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <div class="relative h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 grid place-items-center pulse">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" class="w-6 h-6"><path d="M3 9l9-6 9 6-9 6-9-6z"/><path d="M3 15l9 6 9-6"/></svg>
+              </div>
+              <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">HomeLab – Dev & Staging</h1>
+                <p class="text-slate-300 text-sm md:text-base">“O verdadeiro sentido da vida não está na partida nem na chegada e sim na trajetória.”</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <a href="#arquitetura" class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-3 py-2 text-sm font-semibold hover:bg-blue-500">Ver Arquitetura <i data-lucide="arrow-down"></i></a>
+            </div>
           </div>
         </div>
+      </header>
 
-        <div class="info">
-          <p>Você está acessando pelo hostname: <span class="domain" id="hostname">carregando...</span></p>
-          <p>Servidor: <span id="pod">carregando...</span></p>
-          <p>Data e hora: <span id="datetime">carregando...</span></p>
+      <!-- Hero -->
+      <section class="relative overflow-hidden">
+        <div class="bg-grid absolute inset-0 opacity-40"></div>
+        <div class="container mx-auto px-4 py-10 lg:py-14">
+          <div class="grid lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-7 space-y-6">
+              <h2 class="text-3xl md:text-5xl font-extrabold leading-tight">Ambiente cloud para <span class="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">desenvolvimento</span> e <span class="bg-gradient-to-r from-emerald-400 to-lime-300 bg-clip-text text-transparent">homologação</span>.</h2>
+              <p class="text-slate-300 md:text-lg">A hybrid Kubernetes stack with on-premises infrastructure.</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="rounded-full bg-white/10 px-3 py-1 text-xs border border-white/10">Kubernetes</span>
+                <span class="rounded-full bg-white/10 px-3 py-1 text-xs border border-white/10">OCI</span>
+                <span class="rounded-full bg-white/10 px-3 py-1 text-xs border border-white/10">NGINX Ingress</span>
+                <span class="rounded-full bg-white/10 px-3 py-1 text-xs border border-white/10">MetalLB</span>
+                <span class="rounded-full bg-white/10 px-3 py-1 text-xs border border-white/10">Calico</span>
+                <span class="rounded-full bg-white/10 px-3 py-1 text-xs border border-white/10">NFS</span>
+                <span class="rounded-full bg-white/10 px-3 py-1 text-xs border border-white/10">Sealed Secrets</span>
+                <span class="rounded-full bg-white/10 px-3 py-1 text-xs border border-white/10">cert-manager</span>
+                <span class="rounded-full bg-white/10 px-3 py-1 text-xs border border-white/10">Let’s Encrypt</span>
+              </div>
+            </div>
+            <div class="lg:col-span-5">
+              <!-- Terminal animado -->
+              <div class="card relative rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-5">
+                <div class="flex items-center gap-2 text-xs text-slate-300 mb-3">
+                  <span class="h-2.5 w-2.5 bg-red-500 rounded-full"></span>
+                  <span class="h-2.5 w-2.5 bg-yellow-500 rounded-full"></span>
+                  <span class="h-2.5 w-2.5 bg-green-500 rounded-full"></span>
+                  <span class="ml-2">kubectl get pods -A</span>
+                </div>
+                <pre class="text-xs md:text-sm text-slate-200/90 leading-relaxed overflow-x-auto"><code id="term">default   webapp-5ddf8d7c6b-2j7lm         1/1   Running   0     5m
+      kube-system coredns-6d4b75cb6d-v6mrl      1/1   Running   0     15m
+      nfs-system  nfs-provisioner-0             1/1   Running   0     8m
+      cert-manager cert-manager-5b6f7ccbf6-mzd  1/1   Running   0     6m
+
+      &gt; ready to deploy…</code></pre>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+      </section>
+
+      <!-- Cards de status/links -->
+      <section class="container mx-auto px-4 pb-4 lg:pb-10">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+          <div class="card rounded-2xl border border-white/10 bg-white/10 p-5">
+            <div class="flex items-center gap-3 mb-2"><i data-lucide="globe"></i><h3 class="font-semibold">Hostname</h3></div>
+            <p class="text-slate-300 text-sm"><a id="hostLink" class="underline"></a></p>
+          </div>
+          <div class="card rounded-2xl border border-white/10 bg-white/10 p-5">
+            <div class="flex items-center gap-3 mb-2"><i data-lucide="shield"></i><h3 class="font-semibold">Certificados</h3></div>
+            <p class="text-slate-300 text-sm">cert-manager + Let’s Encrypt</p>
+          </div>
+          <div class="card rounded-2xl border border-white/10 bg-white/10 p-5">
+            <div class="flex items-center gap-3 mb-2"><i data-lucide="lock"></i><h3 class="font-semibold">Segredos</h3></div>
+            <p class="text-slate-300 text-sm">Sealed Secrets (GitOps-friendly)</p>
+          </div>
+          <div class="card rounded-2xl border border-white/10 bg-white/10 p-5">
+            <div class="flex items-center gap-3 mb-2"><i data-lucide="hard-drive"></i><h3 class="font-semibold">Persistência</h3></div>
+            <p class="text-slate-300 text-sm">NFS Server + dynamic provisioning</p>
+          </div>
+          <a class="card block rounded-2xl border border-white/10 bg-white/10 p-5" href="#arquitetura">
+            <div class="flex items-center gap-3 mb-2"><i data-lucide="diagram-3"></i><h3 class="font-semibold">Ver Diagrama</h3></div>
+            <p class="text-slate-300 text-sm">Arquitetura de alto nível do HomeLab</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- Diagrama Mermaid -->
+      <section id="arquitetura" class="relative border-y border-white/10 py-12">
+        <div class="container mx-auto px-4">
+          <h3 class="text-xl md:text-2xl font-bold mb-4 flex items-center gap-2"><i data-lucide="diagram-3"></i> Arquitetura (alto nível)</h3>
+          <p class="text-slate-300 mb-6">Diagrama renderizado no browser com <code class="bg-white/10 px-1.5 py-0.5 rounded">Mermaid</code>.</p>
+          <div class="rounded-2xl border border-white/10 bg-white/10 p-4 overflow-x-auto">
+            <pre class="mermaid">
+              flowchart TB
+                %% ===== Entrada =====
+                U["Usuários / Navegadores"] -->|HTTP/HTTPS| LB["MetalLB\nLoadBalancer IP"]
+
+                %% ===== Ingress =====
+                subgraph ingress["NGINX Ingress Controller"]
+                  IC1["Controller (HA)"]:::comp
+                end
+                LB --> IC1
+
+                %% ===== TLS / Segredos =====
+                subgraph tls["TLS & Segredos"]
+                  CM["cert-manager"]:::comp --> LE["Let's Encrypt (ACME)"]:::ext
+                  SS["Sealed Secrets Controller"]:::comp
+                end
+                IC1 -. "solicita/renova" .-> CM
+                SS -. "desencripta → Secret" .-> NS["Namespaces/Apps"]
+
+                %% ===== Plano de Controle (HA) =====
+                subgraph cp["Plano de Controle (4 nós)"]
+                  direction LR
+                  CP1["control-plane-1"]:::node
+                  CP2["control-plane-2"]:::node
+                  CP3["control-plane-3"]:::node
+                  CP4["control-plane-4"]:::node
+                end
+
+                %% ===== Plano de Dados (10 workers) =====
+                subgraph wk["Plano de Dados (10 workers)"]
+                  direction LR
+                  W1["worker-1"]:::node
+                  W2["worker-2"]:::node
+                  W3["worker-3"]:::node
+                  W4["worker-4"]:::node
+                  W5["worker-5"]:::node
+                  W6["worker-6"]:::node
+                  W7["worker-7"]:::node
+                  W8["worker-8"]:::node
+                  W9["worker-9"]:::node
+                  W10["worker-10"]:::node
+                end
+
+                %% ===== Rede / DNS =====
+                subgraph net["Rede e DNS"]
+                  CAL["Calico (CNI)"]:::comp
+                  DNS["CoreDNS"]:::comp
+                end
+
+                %% ===== Storage (NFS) =====
+                subgraph stg["Armazenamento"]
+                  SC["StorageClass: nfs-storage"]:::comp --> NFS["NFS Subdir External Provisioner"]:::dep
+                end
+
+                %% ===== Aplicações =====
+                subgraph apps["Aplicações / Services"]
+                  APP1["homelab (NGINX estático)"]:::app
+                  SVC1["Service ClusterIP :80"]:::svc
+                end
+
+                %% ===== Ligações =====
+                IC1 -->|"/"| SVC1 --> APP1
+                apps --- stg
+                wk --- apps
+                wk --- net
+                cp --- net
+                IC1 --- net
+
+                %% ===== Estilos =====
+                classDef node fill:#1f2937,stroke:#64748b,color:#e5e7eb,rx:6,ry:6;
+                classDef comp fill:#0f172a,stroke:#475569,color:#e5e7eb,rx:6,ry:6;
+                classDef dep fill:#111827,stroke:#6b7280,color:#e5e7eb,rx:6,ry:6,stroke-dasharray:4 2;
+                classDef svc fill:#111827,stroke:#22d3ee,color:#e5e7eb,rx:6,ry:6;
+                classDef app fill:#111827,stroke:#34d399,color:#e5e7eb,rx:6,ry:6;
+                classDef ext fill:#111827,stroke:#a78bfa,color:#e5e7eb,rx:6,ry:6;
+            </pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Logos/tecnologias -->
+      <section class="container mx-auto px-4 py-10 lg:py-14">
+        <h3 class="text-xl md:text-2xl font-bold mb-6">Tecnologias Envolvidas</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">Kubernetes</div>
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">Kind</div>
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">NGINX</div>
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">MetalLB</div>
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">Calico</div>
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">NFS</div>
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">Sealed Secrets</div>
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">cert-manager</div>
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">MinIO</div>
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">Docker</div>
+          <div class="rounded-xl border border-white/10 bg-white/10 p-4 text-center">OCI</div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="border-t border-white/10">
+        <div class="container mx-auto px-4 py-8 text-sm text-slate-400 flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+          <span>&copy; <span id="y"></span> HomeLab – Dev & Staging</span>
+          <span class="opacity-80">Servidor: <strong>${POD_NAME}</strong></span>
+        </div>
+      </footer>
 
       <script>
-        // Exibir o hostname utilizado
-        document.getElementById('hostname').textContent = window.location.hostname;
-
-        // Exibir o nome do pod (simulado aqui)
-        const podName = "nginx-demo-" + Math.random().toString(36).substring(2, 7);
-        document.getElementById('pod').textContent = podName;
-
-        // Exibir data e hora atual
-        const now = new Date();
-        document.getElementById('datetime').textContent = now.toLocaleString();
+        // Icons
+        window.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
+        // Ano
+        document.getElementById('y').textContent = new Date().getFullYear();
+        // Host dinâmico
+        const h = location.hostname; const a = document.getElementById('hostLink'); a.href = `//${h}`; a.textContent = h;
+        // Terminal: pontinhos
+        const term = document.getElementById('term'); let dots = 0; setInterval(()=>{ dots=(dots+1)%4; term.innerHTML = term.innerHTML.replace(/&gt; ready to deploy.*/, `&gt; ready to deploy${'.'.repeat(dots)}`); }, 900);
       </script>
     </body>
     </html>
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homelab-nginx-conf
+  namespace: homelab
+data:
+  default.conf: |-
+    server {
+      listen 8080 default_server;
+      server_name _;
+
+      root /usr/share/nginx/html;
+      index index.html;
+
+      # Segurança / cabeçalhos
+      add_header X-Content-Type-Options nosniff always;
+      add_header X-Frame-Options DENY always;
+      add_header Referrer-Policy no-referrer-when-downgrade always;
+      add_header X-XSS-Protection "1; mode=block" always;
+      add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
+
+      # Endpoint de saúde para probes
+      location = /healthz {
+        add_header Content-Type text/plain;
+        return 200 "ok\n";
+      }
+
+      # Assets com cache
+      location ~* \.(?:css|js|png|jpg|jpeg|gif|webp|svg|ico|woff2?)$ {
+        access_log off;
+        expires 7d;
+        add_header Cache-Control "public, max-age=604800, immutable";
+      }
+
+      etag on;
+      gzip on;
+      gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+
+      # Página raiz deve servir index.html
+      location = / {
+        try_files /index.html =404;
+      }
+
+      # Demais rotas estáticas
+      location / {
+        try_files $uri $uri/ /index.html =404;
+        autoindex off;
+      }
+    }
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homelab
+  namespace: homelab
+  labels:
+    app: homelab
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: homelab
+  template:
+    metadata:
+      labels:
+        app: homelab
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+      initContainers:
+        - name: render-index
+          image: alpine:3.20
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities: { drop: ["ALL"] }
+          env:
+            - name: POD_NAME
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+            - name: POD_NAMESPACE
+              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
+            - name: POD_IP
+              valueFrom: { fieldRef: { fieldPath: status.podIP } }
+            - name: NODE_NAME
+              valueFrom: { fieldRef: { fieldPath: spec.nodeName } }
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              set -euo pipefail
+              for f in /config/*.html; do
+                [ -f "$f" ] || continue
+                sed -e "s|\${POD_NAME}|${POD_NAME}|g" \
+                    -e "s|\${POD_NAMESPACE}|${POD_NAMESPACE}|g" \
+                    -e "s|\${POD_IP}|${POD_IP}|g" \
+                    -e "s|\${NODE_NAME}|${NODE_NAME}|g" \
+                    "$f" > "/workdir/$(basename "$f")"
+              done
+          volumeMounts:
+            - name: html-src
+              mountPath: /config
+              readOnly: true
+            - name: html-out
+              mountPath: /workdir
+
+      containers:
+        - name: nginx
+          image: nginx:1.27-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          resources:
+            requests: { cpu: "50m", memory: "64Mi" }
+            limits:   { cpu: "300m", memory: "256Mi" }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            - name: html-out
+              mountPath: /usr/share/nginx/html
+              readOnly: true
+            - name: nginx-conf
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+              readOnly: true
+            - name: tmp
+              mountPath: /var/cache/nginx
+            - name: tmp
+              mountPath: /var/run
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 15
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh","-c","/bin/kill -QUIT 1 || true"]
+      volumes:
+        - name: html-src
+          configMap:
+            name: homelab-index
+            items:
+              - key: index.html
+                path: index.html
+        - name: html-out
+          emptyDir: {}
+        - name: nginx-conf
+          configMap:
+            name: homelab-nginx-conf
+            items:
+              - key: default.conf
+                path: default.conf
+        - name: tmp
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-app-home
+  name: homelab
+  namespace: homelab
+  labels:
+    app: homelab
 spec:
+  type: ClusterIP
   selector:
-    app: nginx-app-home
+    app: homelab
   ports:
-  - port: 80
-    targetPort: 80
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-nginx-default
+  namespace: homelab
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"   # letsencrypt-staging para testes, apos usar letsencrypt-prod
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
     - yourdomain.com.br
     - www.yourdomain.com.br
-    secretName: yourdomain-com-br-tls
+    secretName: yourdomain.com.br-tls
   rules:
   - host: yourdomain.com.br
     http:
@@ -199,7 +469,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: nginx-app-home
+            name: homelab
             port:
               number: 80
   - host: www.yourdomain.com.br
@@ -209,6 +479,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: nginx-app-home
+            name: homelab
             port:
               number: 80
